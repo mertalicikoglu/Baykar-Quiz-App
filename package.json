@@ -1,0 +1,26 @@
+{
+  "name": "baykarcase",
+  "version": "1.0.0",
+  "description": "baykarcase",
+  "main": "app.js",
+  "scripts": {
+    "serve": "cross-env NODE_ENV=development concurrently \"postcss src/css/app.css -o public/css/build.css --watch\"  \"rm -rf public/js/build.js && cp src/js/app.js public/js/build.js\" \"live-server ./public\"",
+    "development": "cross-env NODE_ENV=development postcss src/css/app.css -o public/css/build.css",
+    "production": "cross-env NODE_ENV=production postcss src/css/app.css -o public/css/build.css",
+    "start": "npm run serve"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1",
+    "cross-env": "^7.0.3",
+    "cssnano": "^7.0.6",
+    "live-server": "^1.2.2",
+    "postcss-cli": "^11.0.0"
+  }
+}

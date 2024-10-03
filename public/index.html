@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+        .quiz-container {
+            margin: 50px;
+        }
+        .question {
+            margin: 20px 0;
+        }
+        .answers {
+            margin: 20px 0;
+        }
+        .results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Quiz Test</h1>
+        <div id="quiz">
+            <div id="question-container"></div>
+            <div class="answers">
+                <button class="answer hidden" id="answerA">A</button>
+                <button class="answer hidden" id="answerB">B</button>
+                <button class="answer hidden" id="answerC">C</button>
+                <button class="answer hidden" id="answerD">D</button>
+            </div>
+        </div>
+        <div id="results" class="hidden">
+            <h2>Test Results</h2>
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Your Answer</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://jsonplaceholder.typicode.com/posts';
+        let questionIndex = 0;
+        let answersGiven = [];
+        let questionData = [];
+        let timer;
+
+        // Fetch data from API
+        async function getQuestions() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                // Select and format the first 10 questions
+                questionData = data.slice(0, 10).map((item) => ({
+                    question: item.title,
+                    options: generateOptions(item.body),
+                    correctAnswer: 'A' // For simplicity, assume 'A' is the correct answer for all
+                }));
+                loadNextQuestion();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Generate answer options from question body
+        function generateOptions(text) {
+            const words = text.split(' ').slice(0, 4); // Take the first 4 words from the body
+            return words;
+        }
+
+        // Load the next question
+        function loadNextQuestion() {
+            if (questionIndex >= questionData.length) {
+                displayResults();
+                return;
+            }
+
+            const currentQuestion = questionData[questionIndex];
+            document.getElementById('question-container').textContent = `${questionIndex + 1}. ${currentQuestion.question}`;
+
+            const answerButtons = document.querySelectorAll('.answer');
+            currentQuestion.options.forEach((option, index) => {
+                answerButtons[index].textContent = option;
+            });
+
+            // Disable answer buttons for the first 10 seconds
+            answerButtons.forEach(button => {
+                button.classList.add('hidden');
+                button.disabled = true;
+                button.onclick = () => recordAnswer(button.textContent);
+            });
+
+            // Show the buttons and enable them after 10 seconds
+            setTimeout(() => {
+                answerButtons.forEach(button => {
+                    button.classList.remove('hidden');
+                    button.disabled = false;
+                });
+            }, 10000); // Buttons become clickable after 10 seconds
+
+            // Move to the next question after 30 seconds
+            timer = setTimeout(nextQuestion, 30000);
+        }
+
+        // Record the selected answer
+        function recordAnswer(answer) {
+            clearTimeout(timer); // Clear the 30-second timer
+            answersGiven.push({
+                question: questionData[questionIndex].question,
+                selectedAnswer: answer
+            });
+            nextQuestion();
+        }
+
+        // Proceed to the next question
+        function nextQuestion() {
+            questionIndex++;
+            loadNextQuestion();
+        }
+
+        // Display the results at the end of the quiz
+        function displayResults() {
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('results').classList.remove('hidden');
+
+            const resultsBody = document.getElementById('results-table').querySelector('tbody');
+            answersGiven.forEach((result, i) => {
+                const row = resultsBody.insertRow();
+                row.insertCell(0).textContent = `${i + 1}. ${result.question}`;
+                row.insertCell(1).textContent = result.selectedAnswer;
+            });
+        }
+
+        // Start the application
+        getQuestions();
+    </script>
+</body>
+</html>
