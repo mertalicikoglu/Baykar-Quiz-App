@@ -26,7 +26,7 @@ git clone https://github.com/yourusername/quiz-app.git
 
 To run your project in development mode, use the following command:
    ```bash
-   npm install
+   npm run serve
    ```
 
 Open your browser and visit the following URL:
