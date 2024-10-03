@@ -17,12 +17,12 @@ A simple Quiz App built with vanilla JavaScript that dynamically fetches questio
 
 ```bash
 git clone https://github.com/yourusername/quiz-app.git
-
+```
 
 2. Install the necessary dependencies:
    ```bash
    npm install
-
+   ```
 
 To run your project in development mode, use the following command:
    ```bash
